@@ -7,12 +7,48 @@ using namespace std;
 
 Game::Game(string player_1, string player_2)
 {
-    player1 = player_1;
-    player2 = player_2;
-    total_round = 9;
-    which_round = 1;
-    finished = false;
+    setPlayer1(player_1);
+    setPlayer2(player_2);
+    setTotalRound(9);
+    setWhichRound(1);
+    setBoardValues();
+    setFinished(false);
     showPlayers();
+}
+
+void Game::startGame()
+{
+    int location;
+
+    chooseFirstPlayer();
+
+    while ((getWhichRound() != getTotalRound() + 1) && !getFinished())
+    {
+        if (getWhichRound() % 2)
+        {
+            cout << getFirstPlayer() << " plays.\n";
+            cout << "Please select a location for " << getFirstPlayerSymbol() << endl;
+            cin >> location;
+            controlLocation(location, getFirstPlayerSymbol());
+        }
+        else
+        {
+            cout << getSecondPlayer() << " plays.\n";
+            cout << "Please select a location for " << getSecondPlayerSymbol() << endl;
+            cin >> location;
+            controlLocation(location, getSecondPlayerSymbol());
+        }
+        if (getWhichRound() >= 5 && isGameFinished())
+        {
+            playAgain();
+        }
+
+        if (getWhichRound() == getTotalRound() + 1)
+        {
+            cout << "Game is over. There is no winner.\n";
+            playAgain();
+        }
+    }
 }
 
 void Game::showBoard()
@@ -28,8 +64,8 @@ void Game::showBoard()
 
 void Game::showPlayers()
 {
-    cout << "\nPlayer 1: " << player1 << "\n";
-    cout << "Player 2: " << player2 << "\n";
+    cout << "\nPlayer 1: " << getPlayer1() << "\n";
+    cout << "Player 2: " << getPlayer2() << "\n";
 }
 
 void Game::chooseFirstPlayer()
@@ -43,29 +79,29 @@ void Game::chooseFirstPlayer()
 
     while (!correctRange)
     {
-        cout << player1 << " please guess number " << from << " to " << to << ".\n";
+        cout << getPlayer1() << " please guess number " << from << " to " << to << ".\n";
         cin >> player1_guess;
 
-        cout << player2 << " please guess number " << from << " to " << to << ".\n";
+        cout << getPlayer2() << " please guess number " << from << " to " << to << ".\n";
         cin >> player2_guess;
 
         correctRange = controlGuessedNumber(player1_guess, player2_guess, from, to);
         if (correctRange)
         {
-            cout << player1 << " guessed " << player1_guess << ".\n";
-            cout << player2 << " guessed " << player2_guess << ".\n";
+            cout << getPlayer1() << " guessed " << player1_guess << ".\n";
+            cout << getPlayer2() << " guessed " << player2_guess << ".\n";
             cout << "Random number was " << random_number << ".\n";
             if (abs(player1_guess - random_number) < abs(player2_guess - random_number))
             {
-                setFirstPlayer(player1);
-                setSecondPlayer(player2);
-                chooseSymbol(player1);
+                setFirstPlayer(getPlayer1());
+                setSecondPlayer(getPlayer2());
+                chooseSymbol(getPlayer1());
             }
             else if (abs(player2_guess - random_number) < abs(player1_guess - random_number))
             {
-                setFirstPlayer(player2);
-                setSecondPlayer(player1);
-                chooseSymbol(player2);
+                setFirstPlayer(getPlayer2());
+                setSecondPlayer(getPlayer1());
+                chooseSymbol(getPlayer2());
             }
             else
             {
@@ -84,60 +120,6 @@ int Game::randomNumber(int from, int to)
     return random_number;
 }
 
-void Game::startGame()
-{
-    int location;
-
-    chooseFirstPlayer();
-
-    while ((getWhichRound() != total_round + 1) && !finished)
-    {
-        if (getWhichRound() % 2)
-        {
-            cout << first_player << " plays.\n";
-            cout << "Please select a location for " << first_player_symbol << endl;
-            cin >> location;
-            controlLocation(location, first_player_symbol);
-        }
-        else
-        {
-            cout << second_player << " plays.\n";
-            cout << "Please select a location for " << second_player_symbol << endl;
-            cin >> location;
-            controlLocation(location, second_player_symbol);
-        }
-        if (getWhichRound() >= 5 && isGameFinished())
-        {
-            break;
-        }
-
-        if (getWhichRound() == total_round)
-        {
-            cout << "Game is over.\n";
-        }
-    }
-}
-
-void Game::setFirstPlayer(string player)
-{
-    first_player = player;
-}
-
-string Game::getFirstPlayer()
-{
-    return first_player;
-}
-
-void Game::setSecondPlayer(string player)
-{
-    second_player = player;
-}
-
-string Game::getSecondPlayer()
-{
-    return second_player;
-}
-
 void Game::chooseSymbol(string player)
 {
     char symbol;
@@ -152,70 +134,16 @@ void Game::chooseSymbol(string player)
 
         if (isCorrectSymbol)
         {
-            if (player == player1)
+            if (player == getPlayer1())
             {
-                setSymbols(symbol, player1);
+                setSymbols(symbol, getPlayer1());
             }
             else
             {
-                setSymbols(symbol, player2);
+                setSymbols(symbol, getPlayer2());
             }
         }
     }
-}
-
-void Game::setSymbols(char symbol, string player)
-{
-    if (player == first_player)
-    {
-        setFirstPlayerSymbol(toupper(symbol));
-        // first_player_symbol = toupper(symbol);
-        if (first_player_symbol == 'X')
-        {
-            // second_player_symbol = 'O';
-            setSecondPlayerSymbol('O');
-        }
-        else
-        {
-            // second_player_symbol = 'X';
-            setSecondPlayerSymbol('X');
-        }
-    }
-    else
-    {
-        // second_player_symbol = toupper(symbol);
-        setSecondPlayerSymbol(toupper(symbol));
-        if (second_player_symbol == 'X')
-        {
-            // first_player_symbol = 'O';
-            setFirstPlayerSymbol('O');
-        }
-        else
-        {
-            // first_player_symbol = 'X';
-            setFirstPlayerSymbol('X');
-        }
-    }
-}
-
-void Game::setFirstPlayerSymbol(char symbol)
-{
-    first_player_symbol = symbol;
-}
-
-char Game::getFirstPlayerSymbol()
-{
-    return first_player_symbol;
-}
-
-void Game::setSecondPlayerSymbol(char symbol)
-{
-    second_player_symbol = symbol;
-}
-
-char Game::getSecondPlayerSymbol()
-{
-    return second_player_symbol;
 }
 
 bool Game::controlXOrO(char symbol)
@@ -269,17 +197,17 @@ bool Game::isGameFinished()
             }
         }
 
-        if (winner_symbol == second_player_symbol)
+        if (winner_symbol == getSecondPlayerSymbol())
         {
-            finished = true;
+            setFinished(true);
             setWinner(second_player);
             cout << endl
                  << getWinner() << " won!\n";
             return true;
         }
-        else if (winner_symbol == first_player_symbol)
+        else if (winner_symbol == getFirstPlayerSymbol())
         {
-            finished = true;
+            setFinished(true);
             setWinner(first_player);
             cout << endl
                  << getWinner() << " won!\n";
@@ -303,11 +231,10 @@ void Game::controlLocation(int location, char symbol)
 
     if (filled_locations[location - 1] != location - 1)
     {
-        filled_locations[location - 1] = location - 1;
-        board_values[location - 1] = symbol;
+        setFilledLocations(location - 1, location - 1);
+        setBoardValues(symbol, location - 1);
         showBoard();
-        which_round++;
-        setWhichRound(which_round);
+        setWhichRound(which_round + 1);
     }
     else
     {
@@ -315,14 +242,142 @@ void Game::controlLocation(int location, char symbol)
     }
 }
 
-int Game::getWhichRound()
+void Game::playAgain()
 {
-    return which_round;
+    char pressed = 'q';
+
+    cout << "Press y to start the game again, press any key to exit the game.\n";
+    cin >> pressed;
+    if (pressed == 'Y' || pressed == 'y')
+    {
+        setFinished(false);
+        setWhichRound(0);
+        setFilledLocations();
+        setBoardValues();
+        chooseFirstPlayer();
+    }
+    else
+    {
+        setFinished(true);
+    }
+}
+
+void Game::setPlayer1(std::string player)
+{
+    player1 = player;
+}
+
+string Game::getPlayer1()
+{
+    return player1;
+}
+
+void Game::setPlayer2(std::string player)
+{
+    player2 = player;
+}
+
+string Game::getPlayer2()
+{
+    return player2;
+}
+
+void Game::setBoardValues(char value, int index)
+{
+    if (index == -1)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            board_values[i] = value;
+        }
+    }
+    else
+    {
+        board_values[index] = value;
+    }
+}
+
+char *Game::getBoardValues()
+{
+    return board_values;
+}
+
+void Game::setFirstPlayer(string player)
+{
+    first_player = player;
+}
+
+string Game::getFirstPlayer()
+{
+    return first_player;
+}
+
+void Game::setSecondPlayer(string player)
+{
+    second_player = player;
+}
+
+string Game::getSecondPlayer()
+{
+    return second_player;
+}
+
+void Game::setSymbols(char symbol, string player)
+{
+    if (player == first_player)
+    {
+        setFirstPlayerSymbol(toupper(symbol));
+        if (getFirstPlayerSymbol() == 'X')
+        {
+            setSecondPlayerSymbol('O');
+        }
+        else
+        {
+            setSecondPlayerSymbol('X');
+        }
+    }
+    else
+    {
+        setSecondPlayerSymbol(toupper(symbol));
+        if (getSecondPlayerSymbol() == 'X')
+        {
+            setFirstPlayerSymbol('O');
+        }
+        else
+        {
+            setFirstPlayerSymbol('X');
+        }
+    }
+}
+
+void Game::setFirstPlayerSymbol(char symbol)
+{
+    first_player_symbol = symbol;
+}
+
+char Game::getFirstPlayerSymbol()
+{
+    return first_player_symbol;
+}
+
+void Game::setSecondPlayerSymbol(char symbol)
+{
+    second_player_symbol = symbol;
+}
+
+char Game::getSecondPlayerSymbol()
+{
+    return second_player_symbol;
 }
 
 void Game::setWhichRound(int round)
 {
     which_round = round;
+}
+
+int Game::getWhichRound()
+{
+    return which_round;
 }
 
 void Game::setWinner(string player)
@@ -333,4 +388,44 @@ void Game::setWinner(string player)
 string Game::getWinner()
 {
     return winner;
+}
+
+void Game::setFilledLocations(int value, int index)
+{
+    if (index == -1)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            filled_locations[i] = value;
+        }
+    }
+    else
+    {
+        filled_locations[index] = value;
+    }
+}
+
+int *Game::getFilledLocations()
+{
+    return filled_locations;
+}
+
+void Game::setFinished(bool state)
+{
+    finished = state;
+}
+
+bool Game::getFinished()
+{
+    return finished;
+}
+
+void Game::setTotalRound(int round)
+{
+    total_round = round;
+}
+
+int Game::getTotalRound()
+{
+    return total_round;
 }

@@ -2,13 +2,11 @@
 #define GAME_H
 
 #include <string>
-#include <vector>
-#include <array>
 
 class Game
 {
 private:
-    char board_values[9] = {'_', '_', '_', '_', '_', '_', '_', '_', '_'};
+    char board_values[9];
     std::string player1;
     std::string player2;
     char first_player_symbol;
@@ -19,15 +17,29 @@ private:
     int which_round;
     std::string winner;
     bool finished;
-    int filled_locations[9] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+    int filled_locations[9];
 
 public:
     Game(std::string player_1, std::string player_2);
+    void startGame();
     void showBoard();
     void showPlayers();
     void chooseFirstPlayer();
     int randomNumber(int from, int to);
-    void startGame();
+    void chooseSymbol(std::string player);
+    bool controlXOrO(char symbol);
+    bool isGameFinished();
+    bool controlGuessedNumber(int guess1, int guess2, int from, int to);
+    void controlLocation(int location, char symbol);
+    void playAgain();
+
+    // setters and getters
+    void setPlayer1(std::string player);
+    std::string getPlayer1();
+    void setPlayer2(std::string player);
+    std::string getPlayer2();
+    void setBoardValues(char value = '_', int index = -1);
+    char *getBoardValues();
     void setFirstPlayer(std::string player);
     std::string getFirstPlayer();
     void setSecondPlayer(std::string player);
@@ -37,15 +49,16 @@ public:
     char getFirstPlayerSymbol();
     void setSecondPlayerSymbol(char symbol);
     char getSecondPlayerSymbol();
-    void chooseSymbol(std::string player);
-    bool controlXOrO(char symbol);
-    bool isGameFinished();
-    bool controlGuessedNumber(int guess1, int guess2, int from, int to);
-    void controlLocation(int location, char symbol);
     void setWhichRound(int round);
     int getWhichRound();
     void setWinner(std::string player);
     std::string getWinner();
+    void setFilledLocations(int value = -1, int index = -1);
+    int *getFilledLocations();
+    void setFinished(bool state);
+    bool getFinished();
+    void setTotalRound(int round);
+    int getTotalRound();
 };
 
 #endif
